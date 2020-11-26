@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import Container from '@material-ui/core/Container';
+import { createStyles, makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { orange } from '@material-ui/core/colors';
+
+import PurchaseForm from './components/form';
+
+const hdcTheme = createMuiTheme({
+    palette: {
+      primary: {
+        main: orange[500]
+      }
+    }
+  });
+
+  const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+        fontFamily: 'Roboto',
+        // fontSize: 'calc(6px + 2vmin)',
+        padding: 'calc(2px + 2vmin)'
+    }
+  })
+);
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const classes = useStyles();
+
+    return (
+        <ThemeProvider theme={hdcTheme}>
+            <Container maxWidth="sm">
+                <div className={classes.root}>
+                    <PurchaseForm />
+                </div>
+            </Container>
+        </ThemeProvider>
+    );
 }
 
 export default App;
