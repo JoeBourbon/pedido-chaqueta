@@ -9,9 +9,11 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 
-import { auth, createChaqueta } from '../firebase/utils';
+import { auth, createChaqueta, getChaquetas } from '../firebase/utils';
+import { DataContext } from './dataContext';
+import ResponseForm from './response';
+import ListAll from './listAll';
 
 const useStyles = makeStyles((theme) =>
     createStyles({
@@ -39,17 +41,23 @@ export default function PurchaseForm() {
     const [formData, setFormData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitted, setSubmitted] = useState(false);
+    const [listData, setListData] = useState(false);
+    const [chaquetas, setChaquetas] = useState(null);
 
     const e = 'infocontacto@hdcalicante.com';
     const p = '34414*HdcAlc';
-
+    
     useEffect(() => {
         const user = getUser();
         if (formData) {
             createChaqueta(user, formData);
             setSubmitted(true);
         }
-    }, [formData]);
+        if (chaquetas) {
+            setLoading(false);
+            setListData(true);
+        }
+    }, [formData, chaquetas]);
 
     const getUser = async () => {
         try {
@@ -71,6 +79,13 @@ export default function PurchaseForm() {
         });
     };
 
+    const listChaquetas = async () => {
+        const user = getUser();
+        setLoading(true);
+        const cha = await getChaquetas(user);
+        setChaquetas(cha);
+    }
+
     if (loading) {
         return (
             <Box justifyContent="center">
@@ -81,36 +96,50 @@ export default function PurchaseForm() {
 
     if (submitted) {
         return (
-            <Box justifyContent="center">
-                <Typography
-                    variant="body1"
-                    component="span"
-                    gutterBottom
+            <DataContext.Provider value={formData}>
+                <ResponseForm />
+                <Button
+                    className={classes.topSpace}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                        setSubmitted(false);
+                        setFormData(null);
+                    }}
                 >
-                    Ok. Recibido  
-                </Typography>
-                <ThumbUpIcon />
-                <Typography
-                    variant="body1"
-                    component="p"
-                    gutterBottom
+                    Terminar
+                </Button>
+            </DataContext.Provider>
+        )
+    }
+
+    if (listData) {
+        return (
+            <DataContext.Provider value={chaquetas}>
+                <ListAll />
+                <Button
+                    className={classes.topSpace}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                        setChaquetas(null);
+                        setListData(false);
+                    }}
                 >
-                    Avisaremos por Whatsapp cuando ya las tengamos. 
-                </Typography>
-                <Typography
-                    variant="body1"
-                    component="p"
-                    gutterBottom
-                >
-                    Hala! a pasarlo bien. 
-                </Typography>
-            </Box>
+                    Terminar
+                </Button>
+            </DataContext.Provider>
         )
     }
 
     return (
         <form className={classes.root} onSubmit={handleSubmit}>
-            <Typography variant="h4" component="h4" color="primary">
+            <Typography 
+                variant="h4"
+                component="h4"
+                color="primary" 
+                onClick={listChaquetas}
+            >
                 Pedido Chaqueta HDC Alicante
             </Typography>
             <Typography variant="subtitle1" component="p">
