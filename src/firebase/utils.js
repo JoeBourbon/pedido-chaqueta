@@ -39,9 +39,14 @@ const firebaseConfig = {
 
     const chaquetaRef = firestore.collection('chaquetas');
     const snapShot = await chaquetaRef
-        .orderBy('talla', 'asc')
+        .orderBy('genero', 'asc')
         .get();
-    return snapShot.docs.map(doc => doc.data());
+    return snapShot.docs.map(doc => { 
+        return {
+            id: doc.id,
+            ...doc.data(),
+        } 
+    });
   };
 
   //export default firebase;

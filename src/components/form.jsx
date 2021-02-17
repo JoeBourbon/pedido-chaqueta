@@ -43,6 +43,7 @@ export default function PurchaseForm() {
     const [submitted, setSubmitted] = useState(false);
     const [listData, setListData] = useState(false);
     const [chaquetas, setChaquetas] = useState(null);
+    const [finalizado, setFinalizado] = useState(true);
 
     const e = 'infocontacto@hdcalicante.com';
     const p = '34414*HdcAlc';
@@ -113,10 +114,31 @@ export default function PurchaseForm() {
         )
     }
 
+    if (finalizado) {
+        return (
+            <Box justifyContent="center">
+                <Typography>Este Pedido ya está cerrado</Typography>
+                <Button
+                    className={classes.topSpace}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                        setFinalizado(false);
+                        setListData(true);
+                    }}
+                >
+                    Ver lista de pedido
+                </Button>
+            </Box>
+        )
+    }
+
     if (listData) {
         return (
             <DataContext.Provider value={chaquetas}>
-                <ListAll />
+                <Box height={400} justifyContent="center">
+                    <ListAll />
+                </Box>
                 <Button
                     className={classes.topSpace}
                     variant="contained"
@@ -124,6 +146,7 @@ export default function PurchaseForm() {
                     onClick={() => {
                         setChaquetas(null);
                         setListData(false);
+                        setFinalizado(true);
                     }}
                 >
                     Terminar
